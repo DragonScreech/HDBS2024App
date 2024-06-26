@@ -1,10 +1,13 @@
 {
   "expo": {
-    "name": "ReactNativePuja",
+    "name": "Houston Durga Bari",
     "slug": "ReactNativePuja",
-    "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "version": "6",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/DurgaIcon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -16,6 +19,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.hbds.app",
+      "versionCode": 6,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -31,6 +36,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "708e08bd-a382-4c14-a7d3-606cd2e3ce03"
+      }
     }
   }
 }
