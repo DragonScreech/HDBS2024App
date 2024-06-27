@@ -32,7 +32,7 @@ const Tabs = () => {
         headerLeft: () => (
           <View style={{ justifyContent: 'center', alignItems: 'center', }}>
             <Image
-              style={{ width: 30, height: 30, marginLeft: 5 }}
+              style={{ width: 40, height: 40, marginLeft: 5 }}
               source={require('../assets/HDBSLOGO.png')}
             />
           </View>

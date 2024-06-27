@@ -9,6 +9,7 @@ import Tabs from './src/components/Tabs'
 import { StyleSheet, Text, View } from 'react-native';
 import AppNavigator from './src/components/AppNavigator'
 
+
 const Tab = createBottomTabNavigator();
 
 const App = () => {

@@ -6,7 +6,7 @@ import Dots from 'react-native-dots-pagination';
 import Event from '../components/Event';
 import { useNavigation } from '@react-navigation/native';
 
-const Home = () => {
+const Home = ({ navigation }) => {
   const [timeLeft, setTimeLeft] = useState({});
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -150,15 +150,19 @@ const Home = () => {
   const getDateString = (event) => {
     if (event && event.time) {
       const eventDate = new Date(event.time.seconds * 1000 + event.time.nanoseconds / 1000000);
-      return eventDate.toLocaleString();
+      return eventDate.toLocaleString(undefined, {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
     }
     return '';
   };
 
+
   const screenData = [
     {
       image: require('../assets/Durga.png'),
-      headingText: pujaDay ? `Aaj ${pujaDay}` : 'পুজো আসছে!',
+      headingText: pujaDay ? `আজ ${pujaDay}` : 'পুজো আসছে!',
       headingSubtext: pujaDay && nextPujaEvent ? `Next Puja Event: ${getDateString(nextPujaEvent)}` : `${timeLeft.days}d ${timeLeft.hours}h ${timeLeft.minutes}m ${timeLeft.seconds}s`,
       mainTextLine1: 'Houston Durga Bari',
       mainTextLine2: 'Welcomes you to Durga Puja 2024',
@@ -167,7 +171,7 @@ const Home = () => {
     },
     {
       image: require('../assets/Bhog.png'),
-      headingText: pujaDay ? `${pujaDay} Bhoj` : 'পুজোর ভোজ',
+      headingText: pujaDay ? `${pujaDay} ভোজ` : 'পুজোর ভোজ',
       headingSubtext: pujaDay && nextFoodEvent ? `Next Food Event: ${getDateString(nextFoodEvent)}` : 'Puja Feast',
       mainTextLine1: 'Registration Includes',
       mainTextLine2: 'Lunch/Dinner on all Puja Days',
@@ -176,7 +180,7 @@ const Home = () => {
     },
     {
       image: require('../assets/Cultural.webp'),
-      headingText: pujaDay ? `${pujaDay} Onushtan` : 'পুজোর অনুষ্ঠান',
+      headingText: pujaDay ? `${pujaDay} অনুষ্ঠান` : 'পুজোর অনুষ্ঠান',
       headingSubtext: pujaDay && nextCulturalEvent ? `Next Cultural Event: ${getDateString(nextCulturalEvent)}` : 'Cultural Program',
       mainTextLine1: 'Registration Includes',
       mainTextLine2: 'Admissions to all Cultural Programs',
@@ -185,7 +189,7 @@ const Home = () => {
     },
     {
       image: require('../assets/bajaar.webp'),
-      headingText: 'Pujor Bajaar',
+      headingText: 'পুজোর Bazaar',
       headingSubtext: 'Puja Stalls',
       mainTextLine1: 'Come shop for fashion jewelery, indian dresses, and more!',
       mainTextLine2: 'Contact Sujay Kahali to host your stall at Houston Durga Bari! Phone: 404-784-9205',
@@ -248,7 +252,18 @@ const Home = () => {
     <View style={styles.pageContainer}>
       <Image source={item.image} style={styles.pageImage} />
       <Text style={styles.headingText}>{item.headingText}</Text>
-      <Text style={!item.isTrivia ? styles.headingSubtext : styles.triviaHeadingSubtext}>{item.headingSubtext}</Text>
+      <Text style={!item.isTrivia ? pujaDay ? styles.pujaHeadingSubtext : styles.headingSubtext : styles.triviaHeadingSubtext}>{item.headingSubtext}</Text>
+      {pujaDay && (
+        <View>
+          {item.page === 'Cultural' && nextCulturalEvent && <Event item={nextCulturalEvent} page={item.page} date={getDateString(nextCulturalEvent)} />}
+          {item.page === 'Food' && nextFoodEvent && <Event item={nextFoodEvent} page={item.page} date={getDateString(nextFoodEvent)} />}
+          {item.page === 'PujaEvents' && nextPujaEvent && <Event item={nextPujaEvent} page={item.page} date={getDateString(nextPujaEvent)} />}
+          {item.page === 'PujaEvents' && <Text style={styles.headingSubtext}>Click on the Puja Events tab to see all events</Text>}
+          {item.page === 'Food' && <Text style={styles.headingSubtext}>Click on the Food tab to see all food events</Text>}
+          {item.page === 'Cultural' && <Text style={styles.headingSubtext}>Click on the Cultural Program tab to see all program events</Text>}
+          {item.isBajaar && <Text style={styles.bajaarMainText}>{item.mainTextLine1}</Text>}
+        </View>
+      )}
       {item.isTrivia ? (
         <View style={styles.triviaContainer}>
           <Text style={styles.question}>{triviaQuestions[currentQuestion].question}</Text>
@@ -270,18 +285,14 @@ const Home = () => {
           </View>
         </View>
       ) : (
-        <View>
-          <Text style={styles.mainText}>{item.mainTextLine1}</Text>
-          <Text style={item.isBajaar ? styles.bajaarMainText : styles.mainText}>{item.mainTextLine2}</Text>
-          {!item.isBajaar && pujaDay && (
-            <View>
-              {item.page === 'Cultural' && nextCulturalEvent && <Event item={nextCulturalEvent} page={item.page} date={getDateString(nextCulturalEvent)} />}
-              {item.page === 'Food' && nextFoodEvent && <Event item={nextFoodEvent} page={item.page} date={getDateString(nextFoodEvent)} />}
-              {item.page === 'PujaEvents' && nextPujaEvent && <Event item={nextPujaEvent} page={item.page} date={getDateString(nextPujaEvent)} />}
-            </View>
-          )}
-        </View>
+        (!pujaDay && (
+          <View>
+            <Text style={styles.mainText}>{item.mainTextLine1}</Text>
+            <Text style={item.isBajaar ? styles.bajaarMainText : styles.mainText}>{item.mainTextLine2}</Text>
+          </View>
+        ))
       )}
+
     </View>
   );
 
@@ -362,6 +373,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 50,
   },
+  pujaHeadingSubtext: {
+    fontSize: 18,
+    color: '#feb4b4',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
   dotsContainer: {
     position: 'absolute',
     bottom: 60, // Adjust this value if necessary
@@ -376,7 +394,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   bajaarMainText: {
-    fontSize: 18,
+    fontSize: 25,
     fontWeight: 'bold',
     color: '#feb4b4',
     textAlign: 'center',
