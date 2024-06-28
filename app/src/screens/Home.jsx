@@ -261,7 +261,7 @@ const Home = ({ navigation }) => {
           {item.page === 'PujaEvents' && <Text style={styles.headingSubtext}>Click on the Puja Events tab to see all events</Text>}
           {item.page === 'Food' && <Text style={styles.headingSubtext}>Click on the Food tab to see all food events</Text>}
           {item.page === 'Cultural' && <Text style={styles.headingSubtext}>Click on the Cultural Program tab to see all program events</Text>}
-          {item.isBajaar && <Text style={styles.bajaarMainText}>{item.mainTextLine1}</Text>}
+          {item.isBajaar && <Text style={styles.bajaarMainTextLine1}>{item.mainTextLine1}</Text>}
         </View>
       )}
       {item.isTrivia ? (
@@ -287,7 +287,7 @@ const Home = ({ navigation }) => {
       ) : (
         (!pujaDay && (
           <View>
-            <Text style={styles.mainText}>{item.mainTextLine1}</Text>
+            <Text style={item.isBajaar ? styles.bajaarMainTextLine1 : styles.mainText}>{item.mainTextLine1}</Text>
             <Text style={item.isBajaar ? styles.bajaarMainText : styles.mainText}>{item.mainTextLine2}</Text>
           </View>
         ))
@@ -394,6 +394,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   bajaarMainText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#feb4b4',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  bajaarMainTextLine1: {
     fontSize: 25,
     fontWeight: 'bold',
     color: '#feb4b4',
@@ -445,7 +452,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   optionText: {
-    fontSize: 16,
+    fontSize: 13,
     color: 'black',
   },
 });
