@@ -5,9 +5,9 @@
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "version": "8",
+    "version": "8.0.1",
     "orientation": "portrait",
-    "icon": "./assets/images/DurgaIcon.png",
+    "icon": "./assets/images/HDBSLOGO.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -16,7 +16,8 @@
       "backgroundColor": "#490000"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hbds.app"
     },
     "android": {
       "package": "com.hbds.app",
