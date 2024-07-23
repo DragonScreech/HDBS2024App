@@ -1,34 +1,77 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import LottieView from 'lottie-react-native'
-import { arrayUnion, collection, doc, getDoc, updateDoc, where } from 'firebase/firestore';
-import { db } from '../../../firebase'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const Event = ({ item, date, page }) => {
-  const navigate = useNavigation()
+  const navigate = useNavigation();
+
+  const renderLottieView = () => {
+    switch (page) {
+      case 'Cultural':
+        return <LottieView style={styles.flowerImage} source={require('../assets/music.json')} autoPlay loop />;
+      case 'PujaEvents':
+        return <LottieView style={styles.diyaImage} source={require('../assets/flower.json')} autoPlay loop />;
+      case 'Food':
+        return <LottieView style={styles.flowerImage} source={require('../assets/food.json')} autoPlay loop />;
+      case 'Transport':
+        return <LottieView style={styles.transportImage} source={require('../assets/transport.json')} autoPlay loop />;
+      default:
+        return null;
+    }
+  };
+
+  const renderDescriptionButton = () => {
+    if ((page === 'Cultural' && (item.description || item.performers)) ||
+      (page === 'Food' && (item.description || item.sponsor)) ||
+      (item.description)) {
+      return (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigate.navigate('Details', {
+            eventName: item.eventName,
+            performers: item.performers,
+            eventTime: item.timeString,
+            eventDescription: item.description,
+            category: item.category,
+            date: date,
+            isCultural: page === 'Cultural',
+            isPuja: page === 'PujaEvents',
+            isFood: page === 'Food',
+            sponsor: item.sponsor,
+            availability: item.availableFor,
+            isTransport: page === 'Transport',
+            shuttleTimes: item.shuttleTimes,
+          })}
+        >
+          <Text style={styles.buttonText}>See more</Text>
+        </TouchableOpacity>
+      );
+    }
+    return null;
+  };
+
   return (
     <View style={page === 'Transport' ? styles.transport : styles.container}>
-      {page === 'Cultural' && <LottieView style={styles.flowerImage} source={require('../assets/music.json')} autoPlay loop></LottieView>}
-      {page === 'PujaEvents' && <LottieView style={styles.flowerImage} source={require('../assets/flower.json')} autoPlay loop></LottieView>}
-      {page === 'Food' && <LottieView style={styles.flowerImage} source={require('../assets/food.json')} autoPlay loop></LottieView>}
-      {page === 'Transport' && <LottieView style={styles.transportImage} source={require('../assets/transport.json')} autoPlay loop></LottieView>}
+      {renderLottieView()}
       <Text style={styles.nameStyle}>{item.eventName}</Text>
       {page !== 'Transport' ? (
         <Text style={styles.timeStyle}>{item.timeString}</Text>
       ) : (
         <Text style={styles.line2}>{item.eventName2}</Text>
       )}
-      {item.availableFor === 'R' && <Text style={styles.registrationText}>Puja Registration Required</Text>}
-      {item.availableFor === 'B' && <Text style={styles.couponText}>Food coupons available for purchase</Text>}
-      <TouchableOpacity style={styles.button} onPress={() => navigate.navigate('Details', { eventName: item.eventName, performers: item.performers, eventTime: item.timeString, eventDescription: item.description, category: item.category, date: date, isCultural: page === 'Cultural', isPuja: page === 'PujaEvents', isFood: page === 'Food', sponsor: item.sponsor, availability: item.availableFor, isTransport: page === 'Transport', shuttleTimes: item.shuttleTimes })}>
-        <Text style={styles.buttonText}>See more</Text>
-      </TouchableOpacity>
+      {item.availableFor === 'R' && (
+        <Text style={styles.registrationText}>Puja Registration Required</Text>
+      )}
+      {item.availableFor === 'B' && (
+        <Text style={styles.couponText}>Food coupons available for purchase</Text>
+      )}
+      {renderDescriptionButton()}
     </View>
-  )
-}
+  );
+};
 
-export default Event
+export default Event;
 
 const styles = StyleSheet.create({
   container: {
@@ -55,33 +98,40 @@ const styles = StyleSheet.create({
     backgroundColor: '#fa3737',
     borderRadius: 24,
     padding: 4,
-    maxWidth: 100
+    maxWidth: 100,
   },
   buttonText: {
     color: 'white',
     textAlign: 'center',
-    fontWeight: '500'
+    fontWeight: '500',
   },
   timeStyle: {
     marginBottom: 40,
-    fontSize: 18
+    fontSize: 18,
   },
   nameStyle: {
-    fontSize: 18
+    fontSize: 18,
   },
   flowerImage: {
     width: 100,
     height: 100,
     position: 'absolute',
     top: -40,
-    right: -40
+    right: -40,
+  },
+  diyaImage: {
+    width: 70,
+    height: 70,
+    position: 'absolute',
+    top: -40,
+    right: -20,
   },
   transportImage: {
     width: 75,
     height: 75,
     position: 'absolute',
     top: -30,
-    right: -20
+    right: -20,
   },
   registrationText: {
     fontSize: 16,
@@ -100,6 +150,6 @@ const styles = StyleSheet.create({
   line2: {
     marginBottom: 80,
     fontSize: 18,
-    color: '#FA3737'
-  }
-})
+    color: '#FA3737',
+  },
+});

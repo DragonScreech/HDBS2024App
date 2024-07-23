@@ -1,10 +1,12 @@
 import { db } from '../../../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import React, { useState, useEffect, useRef } from 'react';
 import { Linking, StyleSheet, Text, TouchableOpacity, View, ScrollView, Image, Dimensions, SafeAreaView, FlatList } from 'react-native';
 import Dots from 'react-native-dots-pagination';
 import Event from '../components/Event';
 import { useNavigation } from '@react-navigation/native';
+import { Feather } from '@expo/vector-icons';
+
 
 const Home = ({ navigation }) => {
   const [timeLeft, setTimeLeft] = useState({});
@@ -19,9 +21,19 @@ const Home = ({ navigation }) => {
   const [culturalEvents, setCulturalEvents] = useState([]);
   const [bajaarTimes, setBajaarTimes] = useState([]);
   const [bajaarDescription, setBajaarDescription] = useState('');
+  const [alert, setAlert] = useState('')
+  const [alertVisible, setAlertVisible] = useState(true);
   const flatListRef = useRef(null);
   const { width, height } = Dimensions.get('window');
   const navigate = useNavigation();
+
+
+  const closeAlert = () => {
+    setAlertVisible(false);
+  };
+
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,20 +43,24 @@ const Home = ({ navigation }) => {
         const foodEventsDocRef = doc(db, 'HDBS', 'FoodService');
         const culturalEventsDocRef = doc(db, 'HDBS', 'CulturalProgram');
         const bajaarRef = doc(db, 'HDBS', 'PujaBajaar');
+        const alertRef = doc(db, 'HDBS', 'AlertText')
+
 
         const timesDocSnap = await getDoc(timesDocRef);
         const pujaEventsDocSnap = await getDoc(pujaEventsDocRef);
         const foodEventsDocSnap = await getDoc(foodEventsDocRef);
         const culturalEventsDocSnap = await getDoc(culturalEventsDocRef);
         const bajaarSnap = await getDoc(bajaarRef);
+        const alertSnap = await getDoc(alertRef)
         setBajaarTimes(bajaarSnap.data().bajaarTimes);
         setBajaarDescription(bajaarSnap.data().description);
+
 
         if (timesDocSnap.exists()) {
           const timesData = timesDocSnap.data();
           setPujaDates({
             Mahalaya: timesData.Mahalaya,
-            Shashti: timesData.Shashti,
+            Panchami: timesData.Panchami,
             Saptami: timesData.Saptami,
             Ashtami: timesData.Ashtami,
             Navami: timesData.Navami,
@@ -54,11 +70,13 @@ const Home = ({ navigation }) => {
           console.log("Couldn't find the Times document.");
         }
 
+
         if (pujaEventsDocSnap.exists()) {
           setPujaEvents(pujaEventsDocSnap.data().events);
         } else {
           console.log("Couldn't find the Puja Events document.");
         }
+
 
         if (foodEventsDocSnap.exists()) {
           setFoodEvents(foodEventsDocSnap.data().events);
@@ -66,18 +84,37 @@ const Home = ({ navigation }) => {
           console.log("Couldn't find the FoodService document.");
         }
 
+
         if (culturalEventsDocSnap.exists()) {
           setCulturalEvents(culturalEventsDocSnap.data().events);
         } else {
           console.log("Couldn't find the CulturalProgram document.");
+        }
+
+
+        if (alertSnap.exists()) {
+          console.log(alertSnap.data().text)
+          setAlert(alertSnap.data().text)
         }
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
     };
 
+
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "HDBS", "AlertText"), (doc) => {
+      const alertData = doc.data()
+      setAlert(alertData.text)
+      setAlertVisible(true)
+    });
+
+    return () => unsub()
+  }, [])
+
 
   useEffect(() => {
     if (pujaDates.Mahalaya) {
@@ -85,9 +122,11 @@ const Home = ({ navigation }) => {
         setTimeLeft(calculateTimeLeft());
       }, 1000);
 
+
       return () => clearInterval(timer);
     }
   }, [pujaDates]);
+
 
   function calculateTimeLeft() {
     if (pujaDates.Mahalaya) {
@@ -95,13 +134,14 @@ const Home = ({ navigation }) => {
       let targetDate = null;
       let pujaDayName = null;
 
-      const pujaDays = ['Mahalaya', 'Shashti', 'Saptami', 'Ashtami', 'Navami', 'VijayaDashami'];
+
+      const pujaDays = ['Mahalaya', 'Panchami', 'Saptami', 'Ashtami', 'VijayaDashami', 'Navami'];
       for (const day of pujaDays) {
         const date = new Date(pujaDates[day].seconds * 1000 + pujaDates[day].nanoseconds / 1000000);
         if (now.toDateString() === date.toDateString()) {
           targetDate = date;
           if (day == "VijayaDashami") {
-            pujaDayName = 'Vijaya Dashami'
+            pujaDayName = 'Bijoya Dashami'
           }
           else {
             pujaDayName = day;
@@ -113,9 +153,12 @@ const Home = ({ navigation }) => {
         }
       }
 
+
       setPujaDay(pujaDayName);
 
+
       const difference = targetDate - now;
+
 
       let timeLeft = {};
       if (difference > 0) {
@@ -127,11 +170,13 @@ const Home = ({ navigation }) => {
         };
       }
 
+
       return timeLeft;
     } else {
       return {};
     }
   }
+
 
   const getNextEvent = (events) => {
     const now = new Date();
@@ -143,9 +188,11 @@ const Home = ({ navigation }) => {
     return upcomingEvents.length > 0 ? upcomingEvents[0] : null;
   };
 
+
   const nextPujaEvent = getNextEvent(pujaEvents);
   const nextFoodEvent = getNextEvent(foodEvents);
   const nextCulturalEvent = getNextEvent(culturalEvents);
+
 
   const getDateString = (event) => {
     if (event && event.time) {
@@ -159,9 +206,11 @@ const Home = ({ navigation }) => {
   };
 
 
+
+
   const screenData = [
     {
-      image: require('../assets/Durga.png'),
+      image: require('../assets/Durga.jpg'),
       headingText: pujaDay ? `আজ ${pujaDay}` : 'পুজো আসছে!',
       headingSubtext: pujaDay && nextPujaEvent ? `Next Puja Event: ${getDateString(nextPujaEvent)}` : `${timeLeft.days}d ${timeLeft.hours}h ${timeLeft.minutes}m ${timeLeft.seconds}s`,
       mainTextLine1: 'Houston Durga Bari',
@@ -179,7 +228,7 @@ const Home = ({ navigation }) => {
       page: 'Food'
     },
     {
-      image: require('../assets/Cultural.webp'),
+      image: require('../assets/Cultural.png'),
       headingText: pujaDay ? `${pujaDay} অনুষ্ঠান` : 'পুজোর অনুষ্ঠান',
       headingSubtext: pujaDay && nextCulturalEvent ? `Next Cultural Event: ${getDateString(nextCulturalEvent)}` : 'Cultural Program',
       mainTextLine1: 'Registration Includes',
@@ -188,7 +237,7 @@ const Home = ({ navigation }) => {
       page: 'Cultural'
     },
     {
-      image: require('../assets/bajaar.webp'),
+      image: require('../assets/bajaar.png'),
       headingText: 'পুজোর Bazaar',
       headingSubtext: 'Puja Stalls',
       mainTextLine1: 'Come shop for fashion jewelery, indian dresses, and more!',
@@ -203,6 +252,7 @@ const Home = ({ navigation }) => {
       isTrivia: true,
     },
   ];
+
 
   const triviaQuestions = [
     {
@@ -222,9 +272,11 @@ const Home = ({ navigation }) => {
     },
   ];
 
+
   const handlePress = () => {
     Linking.openURL('https://durgabari.org/puja-2024/registration-donation/');
   };
+
 
   const handleAnswer = (index) => {
     setSelectedOption(index);
@@ -247,6 +299,7 @@ const Home = ({ navigation }) => {
       }, 1000);
     }
   };
+
 
   const renderPage = ({ item }) => (
     <View style={styles.pageContainer}>
@@ -293,8 +346,10 @@ const Home = ({ navigation }) => {
         ))
       )}
 
+
     </View>
   );
+
 
   const onViewRef = useRef((viewableItems) => {
     if (viewableItems.viewableItems.length > 0) {
@@ -302,7 +357,9 @@ const Home = ({ navigation }) => {
     }
   });
 
+
   const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
+
 
   return (
     <SafeAreaView style={styles.safeContainer}>
@@ -319,6 +376,17 @@ const Home = ({ navigation }) => {
           viewabilityConfig={viewConfigRef.current}
         />
       </ScrollView>
+      {alertVisible && (
+        <View style={styles.alertContainer}>
+          <View style={styles.alertContent}>
+            <Feather name='alert-triangle' size={25} color={'black'} style={styles.alertIcon} />
+            <Text style={styles.alertText}>{alert}</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={closeAlert}>
+              <Feather name='x-circle' size={25} color={'black'} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
       <View style={styles.dotsContainer}>
         <Dots length={screenData.length} active={activeIndex} activeColor="tomato" />
       </View>
@@ -331,6 +399,7 @@ const Home = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   safeContainer: {
@@ -355,7 +424,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   headingText: {
-    fontSize: 50, // Adjusted to fit within screen
+    fontSize: 35, // Adjusted to fit within screen
     fontWeight: 'bold',
     color: '#fa3737',
     textAlign: 'center',
@@ -387,7 +456,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mainText: {
-    fontSize: 35,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#feb4b4',
     textAlign: 'center',
@@ -401,7 +470,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   bajaarMainTextLine1: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#feb4b4',
     textAlign: 'center',
@@ -455,7 +524,35 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: 'black',
   },
+  alertContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#ffc20a',
+    paddingVertical: 10,
+    zIndex: 1000,
+  },
+  alertContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  alertIcon: {
+    marginRight: 10,
+    marginLeft: 5
+  },
+  alertText: {
+    color: 'black',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    flex: 1,
+  },
+  closeButton: {
+    marginRight: 5,
+    marginLeft: 10
+  }
 });
 
-export default Home;
 
+export default Home;

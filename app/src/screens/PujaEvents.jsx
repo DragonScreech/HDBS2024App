@@ -1,11 +1,12 @@
 import { Dimensions, FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Event from '../components/Event';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../../firebase';
 
 const PujaEvents = () => {
   const [eventsByDate, setEventsByDate] = useState([]);
+  const [data, setData] = useState([]);
   const { width, height } = Dimensions.get('window');
 
   useEffect(() => {
@@ -14,8 +15,8 @@ const PujaEvents = () => {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        const data = docSnap.data().events;
-        const formattedData = data.map(event => {
+        const eventData = docSnap.data().events;
+        const formattedData = eventData.map(event => {
           if (event.time) {
             if (event.time.toDate) { // Check if toDate function exists
               event.time = event.time.toDate(); // Convert Firebase Timestamp to JS Date
@@ -28,7 +29,6 @@ const PujaEvents = () => {
           return event;
         });
 
-        // Group events by the actual date string
         const groupedEvents = formattedData.reduce((acc, event) => {
           if (event.time) {
             const date = event.dateString;
@@ -38,28 +38,58 @@ const PujaEvents = () => {
           return acc;
         }, {});
 
-        // Sort events within each date group by time
         Object.keys(groupedEvents).forEach(date => {
           groupedEvents[date].sort((a, b) => new Date(a.time) - new Date(b.time));
         });
 
-        // Convert the grouped events object to an array and sort by the actual date
-        const sortedEventsByDate = Object.keys(groupedEvents).sort((a, b) => {
-          const dateA = new Date(groupedEvents[a][0].time);
-          const dateB = new Date(groupedEvents[b][0].time);
-          return dateA - dateB;
-        }).map(date => ({
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+
+        const sortedEventsByDate = Object.keys(groupedEvents).map(date => ({
           date,
           events: groupedEvents[date]
         }));
 
-        setEventsByDate(sortedEventsByDate);
+        const currentDayEvents = sortedEventsByDate.filter(group => {
+          const eventDate = new Date(group.events[0].time);
+          return eventDate >= startOfToday && eventDate <= endOfToday;
+        });
+
+        const futureEvents = sortedEventsByDate.filter(group => {
+          const eventDate = new Date(group.events[0].time);
+          return eventDate > endOfToday;
+        }).sort((a, b) => new Date(a.events[0].time) - new Date(b.events[0].time));
+
+        const pastEvents = sortedEventsByDate.filter(group => {
+          const eventDate = new Date(group.events[0].time);
+          return eventDate < startOfToday;
+        }).sort((a, b) => new Date(a.events[0].time) - new Date(b.events[0].time));
+
+        const orderedEvents = [
+          { label: 'Current Day', events: currentDayEvents },
+          { label: 'Future Events', events: futureEvents },
+          { label: 'Past Events', events: pastEvents },
+        ];
+
+        setEventsByDate(orderedEvents);
       } else {
         console.log("We couldn't fetch the data");
       }
     }
 
     fetchData();
+  }, [data]);
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "HDBS", "PujaEvents"), (doc) => {
+      const eventData = doc.data().events;
+      setData(eventData);
+    });
+
+    return () => unsub();
   }, []);
 
   const renderEvent = ({ item }) => (
@@ -68,29 +98,33 @@ const PujaEvents = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {eventsByDate.map((dateGroup, index) => {
-        // Collect all pujaDays for the current date group
-        const pujaDays = dateGroup.events
-          .flatMap(event => event.pujaDays || [])
-          .filter((value, index, self) => self.indexOf(value) === index); // Remove duplicates
+      {eventsByDate.map((group, index) => (
+        <View key={index} style={styles.groupContainer}>
+          <Text style={styles.groupLabel}>{group.label}</Text>
+          {group.events.length != 0 ? group.events.map((dateGroup, dateIndex) => {
+            const pujaDays = (dateGroup.events || [])
+              .flatMap(event => event.pujaDays || [])
+              .filter((value, index, self) => self.indexOf(value) === index); // Remove duplicates
 
-        return (
-          <View key={index}>
-            <Text style={styles.dayText}>{dateGroup.date}</Text>
-            {pujaDays.length > 0 && (
-              <Text style={styles.pujaDayText}>
-                Puja Days: {pujaDays.join(', ')}
-              </Text>
-            )}
-            <FlatList
-              renderItem={renderEvent}
-              horizontal
-              keyExtractor={(item, index) => index.toString()}
-              data={dateGroup.events}
-            />
-          </View>
-        );
-      })}
+            return (
+              <View key={dateIndex}>
+                <Text style={styles.dayText}>{dateGroup.date}</Text>
+                {pujaDays.length > 0 && (
+                  <Text style={styles.pujaDayText}>
+                    Puja Days: {pujaDays.join(', ')}
+                  </Text>
+                )}
+                <FlatList
+                  renderItem={renderEvent}
+                  horizontal
+                  keyExtractor={(item, index) => index.toString()}
+                  data={dateGroup.events}
+                />
+              </View>
+            );
+          }) : <Text style={styles.noEvents}>No {group.label} Puja Events for this puja</Text>}
+        </View>
+      ))}
     </ScrollView>
   );
 }
@@ -111,7 +145,22 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    backgroundColor: 'pink',
+    backgroundColor: '#FFF0C5',
     paddingBottom: 20,
+  },
+  groupContainer: {
+    marginBottom: 20,
+  },
+  groupLabel: {
+    fontSize: 24,
+    marginHorizontal: 10,
+    marginTop: 20,
+    fontWeight: 'bold',
+    color: '#FF6B6B'
+  },
+  noEvents: {
+    marginHorizontal: 10,
+    fontSize: 20
   }
 });
+

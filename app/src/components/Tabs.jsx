@@ -1,3 +1,4 @@
+// Tabs.js
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Feather } from '@expo/vector-icons';
@@ -7,7 +8,8 @@ import PujaEvents from '../screens/PujaEvents';
 import Food from '../screens/Food';
 import Cultural from '../screens/Cultural';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { View, Image } from 'react-native';
+import CustomHeader from '../components/CustomHeader';
+import { getHeaderTitle } from '@react-navigation/elements';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,95 +20,62 @@ const Tabs = () => {
         tabBarActiveTintColor: 'tomato',
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: {
-          backgroundColor: 'white'
+          backgroundColor: 'white',
         },
-        headerStyle: {
-          backgroundColor: '#490000'
+        header: ({ navigation, route, options }) => {
+          const title = getHeaderTitle(options, route.name)
+          return <CustomHeader title={title}></CustomHeader>
         },
-        headerTitleStyle: {
-          fontWeight: 'bold',
-          fontSize: 25,
-          color: 'white'
-        },
-        headerTitleAlign: 'center',
-        headerLeft: () => (
-          <View style={{ justifyContent: 'center', alignItems: 'center', }}>
-            <Image
-              style={{ width: 40, height: 40, marginLeft: 5 }}
-              source={require('../assets/HDBSLOGO.png')}
-            />
-          </View>
-        )
       }}
     >
       <Tab.Screen
-        name={'Home'}
+        name="Home"
+        component={Home}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Feather
-              name={'home'}
-              size={25}
-              color={focused ? 'tomato' : 'black'}
-            />
-          )
+            <Feather name="home" size={25} color={focused ? 'tomato' : 'black'} />
+          ),
         }}
-      >
-        {() => <Home />}
-      </Tab.Screen>
+      />
       <Tab.Screen
-        name={'Puja Events'}
+        name="Puja Events"
+        component={PujaEvents}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Feather
-              name={'calendar'}
-              size={25}
-              color={focused ? 'tomato' : 'black'}
-            />
-          )
+            <Feather name="calendar" size={25} color={focused ? 'tomato' : 'black'} />
+          ),
         }}
-      >
-        {() => <PujaEvents />}
-      </Tab.Screen>
+      />
       <Tab.Screen
-        name={'Transport'}
+        name="Transport"
+        component={Transport}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Feather
-              name={'truck'}
-              size={25}
-              color={focused ? 'tomato' : 'black'}
-            />
-          )
+            <Feather name="truck" size={25} color={focused ? 'tomato' : 'black'} />
+          ),
         }}
-      >
-        {() => <Transport />}
-      </Tab.Screen>
+      />
       <Tab.Screen
-        name={'Cultural Program'}
+        name="Cultural Program"
+        component={Cultural}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Feather
-              name={'music'}
-              size={25}
-              color={focused ? 'tomato' : 'black'}
-            />
-          )
+            <Feather name="music" size={25} color={focused ? 'tomato' : 'black'} />
+          ),
         }}
-      >
-        {() => <Cultural />}
-      </Tab.Screen>
+      />
       <Tab.Screen
-        name={'Food'}
+        name="Food"
+        component={Food}
         options={{
           tabBarIcon: ({ focused }) => (
-            <FontAwesome6 name="utensils" size={25} color={focused ? 'tomato' : "black"} />
-          )
+            <FontAwesome6 name="utensils" size={25} color={focused ? 'tomato' : 'black'} />
+          ),
         }}
-      >
-        {() => <Food />}
-      </Tab.Screen>
+      />
     </Tab.Navigator>
   );
-}
+};
 
 export default Tabs;
+

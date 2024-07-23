@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 import isEqual from 'lodash/isEqual'
@@ -130,7 +130,7 @@ const Details = () => {
         </View>
       )}
       {isTransport && (
-        <View style={styles.content}>
+        <ScrollView style={styles.content}>
           <View style={styles.header}>
             <Text style={styles.category}>Transport</Text>
             {/* <View style={styles.dateTimeContainer}>
@@ -142,7 +142,7 @@ const Details = () => {
           {eventDescription && <Text style={styles.description}>{eventDescription}</Text>}
           {shuttleTimes && <Text style={styles.description}>{shuttleString}</Text>}
           {/* <View style={{ flex: 1 }} /> */}
-        </View>
+        </ScrollView>
       )}
       {isBajaar && (
         <View style={styles.content}>
@@ -153,7 +153,7 @@ const Details = () => {
               <Text style={styles.time}>{eventTime}</Text>
             </View> */}
           </View>
-          <Text style={styles.eventName}>Puja Bajaar</Text>
+          <Text style={styles.eventName}>Puja Bazaar</Text>
           {eventDescription && <Text style={styles.description}>{eventDescription}</Text>}
           {bajaarTimes && <Text style={styles.description}>{bajaarString}</Text>}
           {/* <View style={{ flex: 1 }} /> */}
