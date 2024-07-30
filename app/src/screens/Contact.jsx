@@ -7,6 +7,18 @@ import { DrawerActions, useNavigation } from '@react-navigation/native'
 
 const Contact = () => {
   const navigation = useNavigation()
+  const [contact, setContact] = useState('')
+  useEffect(() => {
+    const fetchData = async () => {
+      const docRef = doc(db, 'HDBS', 'Contact')
+      const docSnap = await getDoc(docRef)
+
+      if (docSnap.exists()) {
+        setContact(docSnap.data().text)
+      }
+    }
+    fetchData()
+  })
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.featherContainer}>
@@ -22,7 +34,7 @@ const Contact = () => {
             </View> */}
         </View>
         <Text style={styles.eventName}>Contact</Text>
-        <Text style={styles.description}>Puja@durgabari.org</Text>
+        <Text style={styles.description}>{contact}</Text>
       </View>
     </SafeAreaView>
   );

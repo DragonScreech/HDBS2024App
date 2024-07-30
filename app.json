@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "HDBS Sharodotsav",
+    "name": "Houston Durga Bari 360",
     "slug": "ReactNativePuja",
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "version": "8.0.3",
+    "version": "8.0.5",
     "orientation": "portrait",
     "icon": "./assets/images/HDBSLOGO.png",
     "scheme": "myapp",
@@ -21,7 +21,7 @@
     },
     "android": {
       "package": "com.hbds.app",
-      "versionCode": 10,
+      "versionCode": 12,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/HDBSLOGO.png",
         "backgroundColor": "#ffffff"

@@ -7,6 +7,8 @@ import AppNavigator from './src/components/AppNavigator'; // Import your stack n
 import Alerts from './src/screens/Alerts'
 import { View, Text } from 'react-native';
 import Contact from './src/screens/Contact'
+import DisclaimerPage from './src/screens/DisclaimerPage'
+import Sponsor from './src/screens/Sponsors'
 
 // Dummy screen for additional drawer item
 function AnotherScreen() {
@@ -26,6 +28,8 @@ export default function App() {
         <Drawer.Screen name="Tabs" component={AppNavigator} options={{ headerShown: false }} />
         <Drawer.Screen name="Alerts" component={Alerts} options={{ headerShown: false }} />
         <Drawer.Screen name="Contact" component={Contact} options={{ headerShown: false }} />
+        <Drawer.Screen name="Disclaimer" component={DisclaimerPage} options={{ headerShown: false }} />
+        <Drawer.Screen name="Our Sponsors" component={Sponsor} options={{ headerShown: false }} />
       </Drawer.Navigator>
     </NavigationContainer>
   );

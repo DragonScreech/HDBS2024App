@@ -133,7 +133,7 @@ export default PujaEvents;
 
 const styles = StyleSheet.create({
   dayText: {
-    fontSize: 36,
+    fontSize: 28,
     marginHorizontal: 10,
     marginTop: 10,
     fontWeight: '500'

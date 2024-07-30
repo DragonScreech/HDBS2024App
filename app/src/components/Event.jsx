@@ -61,10 +61,10 @@ const Event = ({ item, date, page }) => {
         <Text style={styles.line2}>{item.eventName2}</Text>
       )}
       {item.availableFor === 'R' && (
-        <Text style={styles.registrationText}>Puja Registration Required</Text>
+        <Text style={styles.registrationText}>Free with Puja Registration</Text>
       )}
       {item.availableFor === 'B' && (
-        <Text style={styles.couponText}>Food coupons available for purchase</Text>
+        <Text style={styles.couponText}>On the spot purchase (Limited)</Text>
       )}
       {renderDescriptionButton()}
     </View>

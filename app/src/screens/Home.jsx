@@ -21,6 +21,8 @@ const Home = ({ navigation }) => {
   const [culturalEvents, setCulturalEvents] = useState([]);
   const [bajaarTimes, setBajaarTimes] = useState([]);
   const [bajaarDescription, setBajaarDescription] = useState('');
+  const [bajaarMainText1, setBajaarMainText1] = useState('')
+  const [bajaarMainText2, setBajaarMainText2] = useState('')
   const [alert, setAlert] = useState('')
   const [alertVisible, setAlertVisible] = useState(true);
   const flatListRef = useRef(null);
@@ -54,6 +56,8 @@ const Home = ({ navigation }) => {
         const alertSnap = await getDoc(alertRef)
         setBajaarTimes(bajaarSnap.data().bajaarTimes);
         setBajaarDescription(bajaarSnap.data().description);
+        setBajaarMainText1(bajaarSnap.data().mainText1)
+        setBajaarMainText2(bajaarSnap.data().mainText2)
 
 
         if (timesDocSnap.exists()) {
@@ -255,21 +259,149 @@ const Home = ({ navigation }) => {
 
 
   const triviaQuestions = [
+
     {
-      question: 'What does Durga Puja celebrate?',
-      options: ['The victory of Durga over Mahishasura', 'The birth of Lord Krishna', 'The victory of Rama over Ravana', 'The harvest festival'],
+
+      question: 'According to Hindu mythology, who started Durga puja in autumn?',
+
+      options: ['Lord Rama', 'Lord Krishna', 'Lord Brahma', 'Lord Indra'],
+
       answer: 0,
+
     },
+
     {
-      question: 'Which flower is commonly used during Durga Puja?',
-      options: ['Rose', 'Lotus', 'Marigold', 'Hibiscus'],
+
+      question: 'Which of the following names is not a name of Goddess Durga?',
+
+      options: ['Shailaja', 'Gouri', 'Uma', 'Kamala'],
+
       answer: 3,
+
     },
+
     {
-      question: 'What is the name of the last day of Durga Puja?',
-      options: ['Maha Ashtami', 'Maha Saptami', 'Vijaya Dashami', 'Shashti'],
-      answer: 2,
+
+      question: 'What Bengali song genre is related to Durgapuja?',
+
+      options: ['Kirtan', 'Agamani', 'Bhatiyali', 'Rabindra Sangeet'],
+
+      answer: 1,
+
     },
+
+    {
+
+      question: 'Which of the following weapons is not in the hand of Devi Durga?',
+
+      options: ['Trishula', 'Kharga', 'Mushala', 'Vajra'],
+
+      answer: 2,
+
+    },
+
+    {
+
+      question: 'Which of the following Satyajit Ray’s movie did the idol of Durga play an important role?',
+
+      options: ['Devi', 'Kanchanjangha', 'Jay baba felunath', 'Aparajita'],
+
+      answer: 2,
+
+    },
+
+    {
+
+      question: 'In what animal form did the demon that Goddess Durga killed appear?',
+
+      options: ['Buffalo', 'Bull', 'Bison', 'Lion'],
+
+      answer: 0,
+
+    },
+
+    {
+
+      question: 'Which of the following names is not a name of Lord Ganesha?',
+
+      options: ['Lambodara', 'Gajanana', 'Vinayaka', 'MadanaMohana'],
+
+      answer: 3,
+
+    },
+
+    {
+
+      question: 'Which of the following phrases is not related to Bengali Durgapuja?',
+
+      options: ['Festival of color', 'UNESCO intangible cultural heritage', 'The Daughter’s Homecoming', 'AkalBodhana'],
+
+      answer: 0,
+
+    },
+
+    {
+
+      question: 'Which of the following names describes Ma Durga as the daughter of mountain?',
+
+      options: ['Ganesh Janani', 'Dashabhuja', 'Bhabani', 'Adrija'],
+
+      answer: 3,
+
+    },
+
+    {
+
+      question: 'What rituals do Bengalis to greet each other during Bijaya Dashami?',
+
+      options: ['Kolakuli', 'High five', 'Handshake', 'Take a bow'],
+
+      answer: 0,
+
+    },
+
+
+
+    {
+
+      question: 'Traditionally, on which auspicious day does the work of making Durga idol begin?',
+
+      options: ['Mahalaya', 'Rathayatra', 'Janmashtami', 'Bijaya Dashami'],
+
+      answer: 1,
+
+    },
+
+    {
+
+      question: 'What does Durga Puja celebrate?',
+
+      options: ['The victory of Durga over Mahishasura', 'The birth of Lord Krishna', 'The victory of Rama over Ravana', 'The harvest festival'],
+
+      answer: 0,
+
+    },
+
+    {
+
+      question: 'Which flower is commonly used during Durga Puja?',
+
+      options: ['Rose', 'Lotus', 'Marigold', 'Hibiscus'],
+
+      answer: 1,
+
+    },
+
+    {
+
+      question: 'What is the name of the last day of Durga Puja?',
+
+      options: ['Maha Ashtami', 'Maha Saptami', 'Vijaya Dashami', 'Shashti'],
+
+      answer: 2,
+
+    },
+
   ];
 
 
@@ -340,8 +472,10 @@ const Home = ({ navigation }) => {
       ) : (
         (!pujaDay && (
           <View>
-            <Text style={item.isBajaar ? styles.bajaarMainTextLine1 : styles.mainText}>{item.mainTextLine1}</Text>
-            <Text style={item.isBajaar ? styles.bajaarMainText : styles.mainText}>{item.mainTextLine2}</Text>
+            {!item.isBajaar && <Text style={item.isBajaar ? styles.bajaarMainTextLine1 : styles.mainText}>{item.mainTextLine1}</Text>}
+            {item.isBajaar && <Text style={styles.bajaarMainTextLine1}>{bajaarMainText1}</Text>}
+            {item.isBajaar && <Text style={styles.bajaarMainText}>{bajaarMainText2}</Text>}
+            {!item.isBajaar && <Text style={item.isBajaar ? styles.bajaarMainText : styles.mainText}>{item.mainTextLine2}</Text>}
           </View>
         ))
       )}

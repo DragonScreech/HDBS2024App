@@ -14,7 +14,7 @@ const Details = () => {
     dance: require('../assets/dancebg.webp'),
     quiz: require('../assets/quizbg.webp'),
     recitation: require('../assets/recitebg.webp'),
-    other: require('../assets/otherbg.webp'),
+    other: require('../assets/otherbg.jpeg'),
   }
   const [formattedCategory, setFormattedCategory] = useState('')
   const [shuttleString, setShuttleString] = useState('')
@@ -68,7 +68,7 @@ const Details = () => {
   return (
     <View style={styles.container}>
       {isCultural && <Image source={images[formattedCategory]} style={styles.image} />}
-      {isPuja && <Image source={require('../assets/otherbg.webp')} style={styles.image} />}
+      {isPuja && <Image source={require('../assets/otherbg.jpeg')} style={styles.image} />}
       {isFood && <Image source={require('../assets/foodbg.webp')} style={styles.image} />}
       {isTransport && <Image source={require('../assets/transportbg.webp')} style={styles.image} />}
       {isBajaar && <Image source={require('../assets/bajaarbg.webp')} style={styles.image} />}
