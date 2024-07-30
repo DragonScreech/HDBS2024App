@@ -302,7 +302,7 @@ const Home = ({ navigation }) => {
 
     {
 
-      question: 'Which of the following Satyajit Ray’s movie did the idol of Durga play an important role?',
+      question: 'Which of the following Satyajit Ray movie did the idol of Durga play an important role in?',
 
       options: ['Devi', 'Kanchanjangha', 'Jay baba felunath', 'Aparajita'],
 
@@ -352,7 +352,7 @@ const Home = ({ navigation }) => {
 
     {
 
-      question: 'What rituals do Bengalis to greet each other during Bijaya Dashami?',
+      question: 'What rituals do Bengalis observe to greet each other during Bijaya Dashami?',
 
       options: ['Kolakuli', 'High five', 'Handshake', 'Take a bow'],
 

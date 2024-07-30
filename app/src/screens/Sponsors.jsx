@@ -27,9 +27,9 @@ const Sponsor = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.featherContainer}>
-        <Feather name='menu' style={styles.menu} size={30} onPress={() => navigation.dispatch(DrawerActions.openDrawer())}></Feather>
+        <Feather name='menu' style={styles.menu} size={30} onPress={() => navigation.dispatch(DrawerActions.openDrawer())} color={'white'}></Feather>
       </View>
-      <Image source={require('../assets/SponsorsBG.png')} style={styles.image}></Image>
+      <Image source={require('../assets/SponsorsBG.jpg')} style={styles.image}></Image>
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.category}>Sponsors</Text>
